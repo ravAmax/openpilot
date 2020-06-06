@@ -70,11 +70,6 @@ class CarController():
 
     # steer torque
     new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
-
-    # Cut torque at high steer rates to prevent fault
-    if abs(CS.out.steeringRate) > 100:
-      new_steer = 0
-
     apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.out.steeringTorqueEps, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
@@ -83,9 +78,11 @@ class CarController():
       self.last_fault_frame = frame
 
     # Cut steering for 2s after fault
-    if not enabled or (frame - self.last_fault_frame < 200):
+    if not enabled or (frame - self.last_fault_frame < 200) or abs(CS.out.steeringRate) > 100:
       apply_steer = 0
       apply_steer_req = 0
+      if abs(CS.out.steeringRate) > 100:
+        self.steer_rate_limited = True
     else:
       apply_steer_req = 1
 
