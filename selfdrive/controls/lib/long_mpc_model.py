@@ -66,7 +66,7 @@ class LongitudinalMpcModel():
       self.libmpc.init_with_simulation(v_ego)
 
       self.cur_state[0].v_ego = v_ego
-      self.cur_state[0].a_ego = 0.0
+      self.cur_state[0].a_ego = 99
 
       self.v_mpc = v_ego
       self.a_mpc = a_ego
